@@ -1,14 +1,13 @@
 # korra
 
-A Clojure library designed to ... well, that part is up to you.
+"When Hermes came, bidding me come back from Erebos that you might see me with your eyes and so cease from your anger and fearful wrath against the gods, I sprang up at once for joy; but he (Hades) secretly put in my mouth sweet food, a pomegranate seed, and forced me to taste against my will."
 
+- The Rape of Persephone
+ 
 ## Usage
 
-FIXME
+
 
 ## License
 
-Copyright © 2014 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Copyright © 2014 Chris Zheng
