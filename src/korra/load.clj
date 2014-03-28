@@ -14,12 +14,6 @@
 (defn dynamic-loader []
   (clojure.lang.DynamicClassLoader. *clojure-loader*))
 
-(defn to-java-class [bytes]
-  (-> bytes
-      (java.io.ByteArrayInputStream.)
-      (org.apache.bcel.classfile.ClassParser. "")
-      (.parse)))
-
 (defn unload-class [name]
   (clojure.lang.Util/clearCache *rq* *class-cache*)
   (.remove *class-cache* name))
@@ -33,8 +27,10 @@
 
 (defmethod load-class (Class/forName "[B") [bytes]
   (clojure.lang.Util/clearCache *rq* *class-cache*)
-  (let [name (-> (to-java-class bytes)
-                 (.getClassName))
+  (let [name (-> bytes
+                 (clojure.asm.ClassReader.)
+                 (.getClassName)
+                 (path->classname))
         cls (class-0
              (cast ClassLoader (dynamic-loader)) name
              bytes (int 0) (int (count bytes)) nil)]
@@ -50,9 +46,39 @@
       (to-bytes)
       (load-class)))
 
+
+(.? (proxy [clojure.asm.ClassVisitor] []
+      (visit [version access name sygnature suprname interfaces]
+        (println name ))
+
+   ) :name)
+(def cr (new clojure.asm.ClassReader "java.lang.Runnable"))
+(def cp
+  (proxy [clojure.asm.ClassVisitor] []
+      (visit [version access name signature suprname interfaces]
+        (println name))
+      (visitSource [source debug])
+      (visitOuterClass [owner name debug])
+      (visitMethod [access name desc signature exceptions])
+      (visitAttribute [attr])
+      (visitInnerClass [name outerName innerName access])
+      (visitField [access name desc signature value])
+      (visitEnd [])
+      (visitAnnotation [owner debug desc])))
+
+;;
 (comment
+  (.accept cr cp 0)
+
+  (.getClassName (clojure.asm.ClassReader.
+                  (to-bytes "/Users/zhengc/dev/chit/iroh/target/classes/test/A.class")))
+
   (def a (load-class "/Users/zhengc/dev/chit/iroh/target/classes/test/A.class"))
-  (.> org.apache.bcel.classfile.ClassParser))
+  (.> org.apache.bcel.classfile.ClassParser)
+  (.? )
+  ("EXPAND_FRAMES" "SKIP_CODE" "SKIP_DEBUG" "SKIP_FRAMES" "accept" "b" "copyPool" "getAccess" "getClassName" "getInterfaces" "getItem" "getSuperName" "header" "items" "maxStringLength" "new" "readAnnotationValue" "readAnnotationValues" "readAttribute" "readByte" "readClass" "readConst" "readFrameType" "readInt" "readLong" "readParameterAnnotations" "readShort" "readUTF" "readUTF8" "readUnsignedShort" "strings")
+
+  )
 
 (comment
 

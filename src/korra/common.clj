@@ -60,16 +60,20 @@
               (str  ".class"))))
 
 (defn path->classname [path]
-  (if (.endsWith path".class")
-    (.replaceAll (subs path 0 (- (count path) 6)) *sep* ".")))
+  (let [path (if (.endsWith path".class")
+               (subs path 0 (- (count path) 6))
+               path)]
+    (.replaceAll path *sep* ".")))
 
-(->> (jar-contents *java-runtime-jar*)
+
+(comment
+  (->> (jar-contents *java-runtime-jar*)
      (map path->classname)
      (filter identity)
      (map (fn [x] (try (Class/forName x)
                       (catch Throwable t)))))
 
-(comment
+
   (.loadClass (clojure.lang.DynamicClassLoader.) "java.lang.String")
 
   (import '[org.reflections ReflectionUtils Reflections]

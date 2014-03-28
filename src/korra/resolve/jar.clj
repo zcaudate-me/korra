@@ -1,5 +1,6 @@
 (ns korra.resolve.jar
   (:require [korra.common :refer :all]
+            [clojure.java.io :as io]
             [version-clj.core :refer [version-compare]])
   (:import [clojure.lang Symbol]))
 
@@ -7,7 +8,7 @@
 
 (defmethod resolve-jar nil
   [x]
-  (resolve-jar x :classloader *current-cl*))
+  (resolve-jar x :classloader *clojure-loader*))
 
 (defmethod resolve-jar :classloader
   [x _ loader]
