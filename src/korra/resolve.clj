@@ -36,17 +36,27 @@
                                (first))]
                (maven-coordinate path)))
 
-(defn resolve-dependents [x context & {:keys [repositories] :as options}]
-  (cond (string? context)
-        (apply resolve-dependents x (maven-coordinate context) options)
+(defn resolve-with-deps
+  ([x] (resolve-with-deps x nil))
+  ([x context & {:keys [repositories] :as options}]
+     (cond (nil? context)
+           (resolve-with-deps x (-> x jar/resolve-jar first))
 
-        (vector? context)
-        (condp = (type (first context))
-          String
-          (apply resolve-dependents x (map maven-coordinate context) options)
+           (string? context)
+           (apply resolve-with-deps x (maven-coordinate context) options)
 
-          Symbol (jar/resolve-jar x :coordinates
-                                  (coordinate-dependencies [context] repositories))
-          PersistentVector
-          (jar/resolve-jar x :coordinates
-                           (coordinate-dependencies context repositories)))))
+           (vector? context)
+           (condp = (type (first context))
+              String
+              (apply resolve-with-deps x (map maven-coordinate context) options)
+
+              Symbol (jar/resolve-jar x :coordinates
+                                      (coordinate-dependencies [context] repositories))
+              PersistentVector
+              (jar/resolve-jar x :coordinates
+                               (coordinate-dependencies context repositories))))))
+
+
+(resolve-with-deps 'clojure.core "/Users/zhengc/.m2/repository/im/chit/iroh/0.1.6/iroh-0.1.6.jar")
+
+(resolve-with-deps 'clojure.core '[org.clojure/clojure "1.5.1"])

@@ -65,6 +65,15 @@
                path)]
     (.replaceAll path *sep* ".")))
 
+(defmulti to-bytes (fn [x] (type x)))
+
+(defmethod to-bytes java.io.InputStream [stream]
+  (let [o (java.io.ByteArrayOutputStream.)]
+         (io/copy stream o)
+         (.toByteArray o)))
+
+(defmethod to-bytes String [path]
+  (to-bytes (io/input-stream path)))
 
 (comment
   (->> (jar-contents *java-runtime-jar*)

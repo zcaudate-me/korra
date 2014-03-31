@@ -4,9 +4,7 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [com.cemerick/pomegranate "0.3.0"]
                  [version-clj "0.1.0"]
-                 [im.chit/iroh "0.1.6"]
-                 ;;[org.apache.bcel/bcel "5.2"]
-                 ]
+                 [im.chit/iroh "0.1.6"]]
   :profiles {:dev {:dependencies [[midje "1.6.3"]]
                     :plugins [[lein-midje "3.1.3"]]}}
   :documentation {:files {"docs/index"

@@ -18,7 +18,7 @@
   (clojure.lang.Util/clearCache *rq* *class-cache*)
   (.remove *class-cache* name))
 
-(defmulti load-class (fn [x] (type x)))
+(defmulti load-class (fn [x & args] (type x)))
 
 (defmethod load-class Class [cls]
   (.put *class-cache*
@@ -36,109 +36,68 @@
              bytes (int 0) (int (count bytes)) nil)]
     (load-class cls)))
 
-(defn to-bytes [path]
-  (let [o (java.io.ByteArrayOutputStream.)]
-         (io/copy (io/input-stream path) o)
-         (.toByteArray o)))
+(defmethod load-class String [path & more]
+  (cond (.endsWith path ".class")
+        (-> path
+            (to-bytes)
+            (load-class))
 
-(defmethod load-class String [path]
-  (-> path
-      (to-bytes)
-      (load-class)))
+        (or (.endsWith path ".war")
+            (.endsWith path ".jar"))
+        (let [resource-name (resource-path (first more))
+              rt    (java.util.jar.JarFile. path)
+              entry (.getEntry rt resource-name)
+              stream (.getInputStream rt entry)]
+          (-> stream
+              (to-bytes)
+              (load-class)))))
 
 
-(.? (proxy [clojure.asm.ClassVisitor] []
-      (visit [version access name sygnature suprname interfaces]
-        (println name ))
 
-   ) :name)
-(def cr (new clojure.asm.ClassReader "java.lang.Runnable"))
-(def cp
-  (proxy [clojure.asm.ClassVisitor] []
+(comment
+  (.? (proxy [clojure.asm.ClassVisitor] []
+        (visit [version access name sygnature suprname interfaces]
+          (println name ))
+
+        ) :name)
+  (def cr (new clojure.asm.ClassReader "java.lang.Runnable"))
+  (def cr (clojure.asm.ClassReader. "java.lang.String"))
+  (def cp
+    (proxy [java.util.AbstractMap clojure.asm.ClassVisitor] []
       (visit [version access name signature suprname interfaces]
         (println name))
       (visitSource [source debug])
       (visitOuterClass [owner name debug])
-      (visitMethod [access name desc signature exceptions])
+      (visitMethod [access name desc signature exceptions]
+        (println " " name))
       (visitAttribute [attr])
       (visitInnerClass [name outerName innerName access])
       (visitField [access name desc signature value])
       (visitEnd [])
       (visitAnnotation [owner debug desc])))
 
-;;
-(comment
-  (.accept cr cp 0)
+  (>source proxy)
+  (.%> (type cp))
+  (.? cp :name)
+  [korra.load.proxy$java.lang.Object$ClassVisitor$d0504653 [java.lang.Object #{clojure.lang.IProxy clojure.asm.ClassVisitor}]]
+  (.? clojure.asm.ClassVisitor :abstract :public :instance)
+  (defn class-visitor
+    )
+  ;;
+  (comment
+    (.accept cr cp 0)
 
-  (.getClassName (clojure.asm.ClassReader.
-                  (to-bytes "/Users/zhengc/dev/chit/iroh/target/classes/test/A.class")))
+    (.getClassName (clojure.asm.ClassReader.
+                    (to-bytes "/Users/zhengc/dev/chit/iroh/target/classes/test/A.class")))
 
-  (def a (load-class "/Users/zhengc/dev/chit/iroh/target/classes/test/A.class"))
-  (.> org.apache.bcel.classfile.ClassParser)
-  (.? )
-  ("EXPAND_FRAMES" "SKIP_CODE" "SKIP_DEBUG" "SKIP_FRAMES" "accept" "b" "copyPool" "getAccess" "getClassName" "getInterfaces" "getItem" "getSuperName" "header" "items" "maxStringLength" "new" "readAnnotationValue" "readAnnotationValues" "readAttribute" "readByte" "readClass" "readConst" "readFrameType" "readInt" "readLong" "readParameterAnnotations" "readShort" "readUTF" "readUTF8" "readUnsignedShort" "strings")
+    (def a (load-class "/Users/zhengc/dev/chit/iroh/target/classes/test/A.class"))
+    (.> org.apache.bcel.classfile.ClassParser)
+    (.? )
+    ("EXPAND_FRAMES" "SKIP_CODE" "SKIP_DEBUG" "SKIP_FRAMES" "accept" "b" "copyPool" "getAccess" "getClassName" "getInterfaces" "getItem" "getSuperName" "header" "items" "maxStringLength" "new" "readAnnotationValue" "readAnnotationValues" "readAttribute" "readByte" "readClass" "readConst" "readFrameType" "readInt" "readLong" "readParameterAnnotations" "readShort" "readUTF" "readUTF8" "readUnsignedShort" "strings")
 
-  )
+    )
 
-(comment
+  (comment
 
-  (>refresh)
-  (def stuff (let [barr ()]
-               (.write)
-               barr
-               (.toByteArray barr)))
-  (def out (java.io.ByteArrayOutputStream.))
-  (def in (java.io.FileInputStream.
-           (clojure.java.io/as-file "")))
-
-
-
-
-
-  (def l (im.chit.korra.Loader.))
-
-
-  (use 'no.disassemble)
-
-  (.> l)
-  (.getParent (.getParent l))
-  (.resolveClass l "test.A" )
-
-
-
-  (binding [*use-context-classloader* true]
-    (let [cl (.getContextClassLoader (Thread/currentThread))]
-      (try (.setContextClassLoader (Thread/currentThread) l)
-           (Class/forName "test.A")
-           (finally
-             (.setContextClassLoader (Thread/currentThread) cl)))))
-
-  (with-bindings {clojure.lang.Compiler/LOADER l}
-    (eval ['test.A '(Class/forName "test.A")
-           '(import [test A])]))
-
-  (def class-cache (.* clojure.lang.DynamicClassLoader "classCache" :#))
-
-  (def rq (.* clojure.lang.DynamicClassLoader "rq" :#))
-
-  (take 10 (keys (class-cache clojure.lang.DynamicClassLoader)))
-
-  ("korra.load$eval15479" "korra.load$eval4641$fn__4644" "korra.load$eval7627$fn__7628" "korra.load$eval6333$iter__6336__6342$fn__6343$iter__6338__6344$fn__6345$fn__6346" "korra.load$eval4406" "io.aviso.columns$fixed_column$fn__3409" "korra.load$eval15510$iter__15513__15519$fn__15520$iter__15515__15521$fn__15522" "korra.load$eval16840" "korra.load$eval11938$iter__11941__11947$fn__11948$iter__11943__11949$fn__11950$fn__11951" "")
-
-  (.put (class-cache clojure.lang.DynamicClassLoader)
-        "test.A" (java.lang.ref.SoftReference. (.loadClass l "test.A")
-                                               (rq clojure.lang.DynamicClassLoader)))
-
-  (.length (io/as-file "project.clj"))
-
-
-  (io/copy (io/reader )
-           out)
-
-  (count (.toByteArray out))
-
-  (io/copy in out)
-
-  (seq (.toByteArray out))
-  (@#'io/byte-array-type)
-)
+    (>refresh)
+))
