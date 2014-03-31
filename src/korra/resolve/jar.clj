@@ -20,10 +20,8 @@
 
 (defmethod resolve-jar :jar-path
   [x _ jar-file]
-  (let [res-path (resource-path x)
-        contents (filter #(= % res-path)
-                         (jar-contents jar-file))]
-    (if-not (empty? contents)
+  (let [res-path (resource-path x)]
+    (if (jar-entry jar-file res-path)
       [(str jar-file) res-path])))
 
 (defmethod resolve-jar :jar-paths
@@ -61,3 +59,8 @@
 (defmethod resolve-jar :repository
   [x _ & [repo]]
   (resolve-jar x :jar-paths (find-latest-jars (or repo *local-repo*))))
+
+
+(comment
+  (resolve-jar 'clojure.core :repository)
+)

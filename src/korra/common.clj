@@ -39,14 +39,6 @@
           symbol
           (vector version)))))
 
-(defn jar-contents [jar-path]
-  (with-open [zip (java.util.zip.ZipInputStream.
-                   (io/input-stream jar-path))]
-    (loop [entries []]
-      (if-let [e (.getNextEntry zip)]
-        (recur (conj entries (.getName e)))
-        entries))))
-
 (defn resource-path [x]
   (condp = (type x)
     String x
@@ -58,6 +50,19 @@
     Class (-> (.getName x)
               (.replaceAll "\\." *sep*)
               (str  ".class"))))
+
+(defn jar-entry [jar-path entry]
+  (let [resource-name (resource-path entry)
+        jar    (java.util.jar.JarFile. jar-path)]
+    (.getEntry jar resource-name)))
+
+(defn jar-contents [jar-path]
+  (with-open [zip (java.util.zip.ZipInputStream.
+                   (io/input-stream jar-path))]
+    (loop [entries []]
+      (if-let [e (.getNextEntry zip)]
+        (recur (conj entries (.getName e)))
+        entries))))
 
 (defn path->classname [path]
   (let [path (if (.endsWith path".class")
