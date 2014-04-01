@@ -5,7 +5,9 @@
 
 (def ^:dynamic *sep* (System/getProperty "file.separator"))
 
-(def ^:dynamic *clojure-loader* (.getClassLoader clojure.lang.RT))
+(def ^:dynamic *clojure-loader*
+  (or (.getClassLoader clojure.lang.RT)
+      (.getContextClassLoader (Thread/currentThread))))
 
 (def ^:dynamic *java-class-path*
   (->> (string/split (System/getProperty "java.class.path") #":")
@@ -37,7 +39,8 @@
       (-> (clojure.string/join  "." (reverse group))
           (str *sep* artifact)
           symbol
-          (vector version)))))
+          (vector version)))
+    (throw (Exception. (str "The path " path " does not conform to a valid maven repo jar")))))
 
 (defn resource-path [x]
   (condp = (type x)

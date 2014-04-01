@@ -56,7 +56,12 @@
               (jar/resolve-jar x :coordinates
                                (coordinate-dependencies context repositories))))))
 
+(comment
+  ()
+  ;;(resolve-with-deps 'clojure.core "/Users/zhengc/.m2/repository/im/chit/iroh/0.1.6/iroh-0.1.6.jar")
+  (-> (resolve-with-deps 'clojure.core '[im.chit/iroh "0.1.6"])
+      (first) (maven-coordinate))
 
-(resolve-with-deps 'clojure.core "/Users/zhengc/.m2/repository/im/chit/iroh/0.1.6/iroh-0.1.6.jar")
-
-(resolve-with-deps 'clojure.core '[org.clojure/clojure "1.5.1"])
+  (println (clojure.repl/pst))
+  (resolve-with-deps 'clojure.core '[[org.clojure/clojure "1.5.1"] [im.chit/iroh "0.1.6"]])
+  (resolve-with-deps 'clojure.core '[org.clojure/clojure "1.5.1"]))
