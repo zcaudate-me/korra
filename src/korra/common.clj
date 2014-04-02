@@ -56,8 +56,9 @@
 
 (defn jar-entry [jar-path entry]
   (let [resource-name (resource-path entry)
-        jar    (java.util.jar.JarFile. jar-path)]
-    (.getEntry jar resource-name)))
+        file   (io/as-file jar-path)]
+    (if (.exists file)
+      (.getEntry (java.util.jar.JarFile. file) resource-name))))
 
 (defn jar-contents [jar-path]
   (with-open [zip (java.util.zip.ZipInputStream.
