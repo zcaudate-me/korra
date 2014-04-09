@@ -1,12 +1,9 @@
 # korra
 
-"When Hermes came, bidding me come back from Erebos that you might see me with your eyes and so cease from your anger and fearful wrath against the gods, I sprang up at once for joy; but he (Hades) secretly put in my mouth sweet food, a pomegranate seed, and forced me to taste against my will."
+"When we hit our lowest point, we are open to the greatest change." 
 
-- The Rape of Persephone
+      - Avatar Aang
  
-## Usage
-
-
 
 ## License
 
