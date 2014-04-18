@@ -4,10 +4,10 @@
             [iroh.core :as iroh]))
 
 (def ^:dynamic *class-cache*
-  (iroh/.> clojure.lang.DynamicClassLoader .classCache))
+  (iroh/.> clojure.lang.DynamicClassLoader (.classCache)))
 
 (def ^:dynamic *rq*
-  (iroh/.> clojure.lang.DynamicClassLoader .rq))
+  (iroh/.> clojure.lang.DynamicClassLoader (.rq)))
 
 (def class-0 (iroh/.? ClassLoader "defineClass0" :#))
 
@@ -53,7 +53,6 @@
               (load-class)))))
 
 
-
 (comment
   (.? (proxy [clojure.asm.ClassVisitor] []
         (visit [version access name sygnature suprname interfaces]
@@ -62,6 +61,14 @@
         ) :name)
   (def cr (new clojure.asm.ClassReader "java.lang.Runnable"))
   (def cr (clojure.asm.ClassReader. "java.lang.String"))
+  (.> cr .getSuperName)
+  "java/lang/Object"
+  (seq (.> cr .getInterfaces))
+  nil
+
+  (.? cr :name #"get")
+  ("getAccess" "getAttributes" "getClassName" "getImplicitFrame" "getInterfaces" "getItem" "getItemCount" "getMaxStringLength" "getSuperName")
+
   (def cp
     (proxy [java.util.AbstractMap clojure.asm.ClassVisitor] []
       (visit [version access name signature suprname interfaces]

@@ -1,7 +1,7 @@
 (defproject im.chit/korra "0.1.0"
   :description "jar and maven package introspection"
   :url "http://www.github.com/zcaudate/korra"
-  :dependencies [[org.clojure/clojure "1.5.1"]
+  :dependencies [[org.clojure/clojure "1.6.0"]
                  [com.cemerick/pomegranate "0.3.0"]
                  [version-clj "0.1.0"]
                  [im.chit/iroh "0.1.6"]]
