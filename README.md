@@ -110,28 +110,28 @@ If the entry cannot be found, nil will be returned:
 ;; => nil
 ```
 
-Or a vector of jar-files
+In addition to the jar, one can use as the contexte a vector of jar-files:
 
 ```clojure
 (resolve-jar 'clojure.core ["/Users/zhengc/.m2/repository/org/clojure/clojure/1.6.0/clojure-1.6.0.jar"])
 ;; => ["/Users/zhengc/.m2/repository/org/clojure/clojure/1.6.0/clojure-1.6.0.jar" "clojure/core.clj"]
 ```
 
-Or a coordinate
+or a coordinate:
 
 ```clojure
 (resolve-jar 'clojure.core '[org.clojure/clojure "1.6.0"])
 ;; => ["/Users/zhengc/.m2/repository/org/clojure/clojure/1.6.0/clojure-1.6.0.jar" "clojure/core.clj"]
 ```
 
-Or a vector of coordinates
+or a vector of coordinates:
 
 ```clojure
 (resolve-jar 'clojure.core '[[org.clojure/clojure "1.6.0"]])
 ;; => ["/Users/zhengc/.m2/repository/org/clojure/clojure/1.6.0/clojure-1.6.0.jar" "clojure/core.clj"]
 ```
 
-Or the entire maven local repository
+or if you simply just want to explore, the context can be an entire maven local repository:
 
 ```clojure
 (resolve-jar 'clojure.core :repository)
@@ -140,7 +140,7 @@ Or the entire maven local repository
 
 ### Coordinates and Dependencies
 
-Once a mapping between the object (resource path, class or namespace) and the actual jar and jar-entry on the file system, other very helpful functions can be built to make use of this: 
+Once a mapping between the `resource` (path, class or namespace) and the actual jar and jar-entry on the file system, other very helpful functions can be built around `resolve-jar`: 
 
 `resolve-coordinates` works similarly to `resolve-jar` but will return the actual maven-style coordinates
 
@@ -160,6 +160,11 @@ Once a mapping between the object (resource path, class or namespace) and the ac
        '[im.chit/korra "0.1.2"])
 ;;=> ["/Users/zhengc/.m2/repository/org/clojure/clojure/1.6.0/clojure-1.6.0.jar" "clojure/core.clj"]
 ```
+
+
+## Applications
+
+korra was extracted out of [lein-repack](https://github.com/zcaudate/lein-repack), a leiningen plugin for analysing and repacking a larger project into a number of smaller ones.
 
 ## License
 
