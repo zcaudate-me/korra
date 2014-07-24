@@ -1,12 +1,12 @@
 # korra
 
-[![Build Status](https://travis-ci.org/zcaudate/iroh.png?branch=master)](https://travis-ci.org/zcaudate/iroh)
+[![Build Status](https://travis-ci.org/zcaudate/korra.png?branch=master)](https://travis-ci.org/zcaudate/korra)
 
 ![Aang and Korra](http://media.tumblr.com/tumblr_maorg9PDAt1ro0fob.bmp)
 
 >  When we hit our lowest point, we are open to the greatest change.
 >
->      Avatar Aang, Legend of Korra
+>  Avatar Aang, Legend of Korra
 
 ## Installation
 
