@@ -18,7 +18,25 @@ Add to project.clj dependencies:
 
 ## Overview
 
-Korra is a library for introspection of maven packages. The trick is to provide mappings between different representations of the same thing. There is a reversible mapping between the maven jar file and the coordinate. We use `maven-file` and `maven-coordinate` to transition from one to the other:
+Korra is a library for introspection of maven packages. The library provides mappings between different representations of the same jvm concept. 
+
+- maven coordinate and the jar file 
+- a 'resource' and its related jar and jar entry under a given context
+    - the resource can be:
+        - a symbol representing a clojure namespace
+        - a path to a resource
+        - a java class
+    - the context can be:
+        - the jvm classloader classpath
+        - a single jar
+        - a list of jars
+        - a maven coordinate
+        - a list of maven coordinates
+        - the entire maven local-repo.
+
+## Basics
+
+There is a reversible mapping between the maven jar file and the coordinate. We use `maven-file` and `maven-coordinate` to transition from one to the other:
 
 ```clojure
 (use 'korra.common)
@@ -40,7 +58,7 @@ There is also a mapping between a clojure namespace, a java class and the their 
 
 ### Resolve
 
-The main work-horse is for korra is `resolve-jar`. The most basic functionality is to resolves a namespace symbol with the current jvm classpath:
+The main work-horse is for korra is `resolve-jar`. It resolves a `resource` and a `context`. The default context is the current jvm classpath:
 
 ```clojure
 (use 'korra.resolve)
@@ -48,28 +66,28 @@ The main work-horse is for korra is `resolve-jar`. The most basic functionality 
 ;; => ["/Users/zhengc/.m2/repository/org/clojure/clojure/1.6.0/clojure-1.6.0.jar" "clojure/core.clj"]
 ```
 
-"It will also resolve classes"
+It will resolve classes:
 
 ```clojure
 (resolve-jar java.lang.Object)
 ;;=> ["/Library/Java/JavaVirtualMachines/jdk1.7.0_60.jdk/Contents/Home/jre/lib/rt.jar" "java/lang/Object.class"]
 ```
 
-It will resolve paths as a string
+It will also resolve strings:
 
 ```clojure
 (resolve-jar "clojure/core.clj")
 ;;=> ["/Users/zhengc/.m2/repository/org/clojure/clojure/1.6.0/clojure-1.6.0.jar" "clojure/core.clj"]
 ```
 
-Symbols with the last section capitalized will default to a search of class
+Symbols with the last section capitalized will default to java classes instead of clojure files:
 
 ```clojure
 (resolve-jar 'clojure.lang.IProxy)
 ;;=> ["/Users/zhengc/.m2/repository/org/clojure/clojure/1.6.0/clojure-1.6.0.jar" "clojure/lang/IProxy.class"]
 ```
 
-It will return nil if the library cannot be found
+It will return nil if the resource cannot be found:
 
 ```clojure
 (resolve-jar 'does.not.exist)
@@ -78,12 +96,18 @@ It will return nil if the library cannot be found
 
 ### Contexts
 
-Apart from searching  default option is the current jvm load-path
+Apart from searching via the current jvm classpath, other search contexts can be set, the most simple being a string representation of the jar path:
 
 ```clojure
-"It takes a path to a jar-file"
 (resolve-jar 'clojure.core "/Users/zhengc/.m2/repository/org/clojure/clojure/1.6.0/clojure-1.6.0.jar")
 ;; => ["/Users/zhengc/.m2/repository/org/clojure/clojure/1.6.0/clojure-1.6.0.jar" "clojure/core.clj"]
+```
+
+If the entry cannot be found, nil will be returned:
+
+```clojure
+(resolve-jar 'clojure.core "/Users/zhengc/.m2/repository/dynapath/dynapath/0.2.0/dynapath-0.2.0.jar")
+;; => nil
 ```
 
 Or a vector of jar-files

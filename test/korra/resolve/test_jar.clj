@@ -19,14 +19,14 @@
 
   (resolve-jar 'clojure.core
                :jar-paths
-               [(str *local-repo* "/org/clojure/clojure/1.5.1/clojure-1.5.1.jar")])
-  => [(str *local-repo* "/org/clojure/clojure/1.5.1/clojure-1.5.1.jar")
+               [(str *local-repo* "/org/clojure/clojure/1.6.0/clojure-1.6.0.jar")])
+  => [(str *local-repo* "/org/clojure/clojure/1.6.0/clojure-1.6.0.jar")
       "clojure/core.clj"]
 
   (resolve-jar 'clojure.core
                :coordinate
-               '[org.clojure/clojure "1.5.1"])
-  => [(str *local-repo* "/org/clojure/clojure/1.5.1/clojure-1.5.1.jar") "clojure/core.clj"])
+               '[org.clojure/clojure "1.6.0"])
+  => [(str *local-repo* "/org/clojure/clojure/1.6.0/clojure-1.6.0.jar") "clojure/core.clj"])
 
 
 (comment (maven-file )
