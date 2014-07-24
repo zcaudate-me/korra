@@ -28,4 +28,7 @@
                '[org.clojure/clojure "1.5.1"])
   => [(str *local-repo* "/org/clojure/clojure/1.5.1/clojure-1.5.1.jar") "clojure/core.clj"])
 
-;;(resolve-jar 'midje.sweet :repository)
+
+(comment (maven-file )
+         (resolve-jar  :repository)
+         (resolve-jar ' :repository))

@@ -4,10 +4,10 @@
             [version-clj.core :refer [version-compare]])
   (:import [clojure.lang Symbol]))
 
-(defmulti resolve-jar (fn [t & [k v]] k))
+(defmulti resolve-jar (fn [x & [k v]] k))
 
 (defmethod resolve-jar nil
-  [x]
+  [x & _]
   (resolve-jar x :classloader *clojure-loader*))
 
 (defmethod resolve-jar :classloader

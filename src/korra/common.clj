@@ -42,13 +42,20 @@
           (vector version)))
     (throw (Exception. (str "The path " path " does not conform to a valid maven repo jar")))))
 
+(defn resource-symbol-path [sym]
+  (let [sym-str (-> (str sym)
+                    (.replaceAll "\\." *sep*))
+        f-char (-> sym-str (string/split (re-pattern *sep*)) last first)]
+
+    (str sym-str
+         (if (<= (int \A) (int f-char) (int \Z))
+           ".class"
+           ".clj"))))
+
 (defn resource-path [x]
   (condp = (type x)
     String x
-    Symbol (-> (str x)
-               (munge)
-               (.replaceAll "\\." *sep*)
-               (str ".clj"))
+    Symbol (resource-symbol-path x)
 
     Class (-> (.getName x)
               (.replaceAll "\\." *sep*)

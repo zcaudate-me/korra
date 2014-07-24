@@ -52,8 +52,15 @@
               (to-bytes)
               (load-class)))))
 
-
 (comment
+
+  (def cc (.get (javassist.ClassPool/getDefault)
+                "java.lang.String"))
+
+
+
+
+
   (.? (proxy [clojure.asm.ClassVisitor] []
         (visit [version access name sygnature suprname interfaces]
           (println name ))
@@ -61,16 +68,35 @@
         ) :name)
   (def cr (new clojure.asm.ClassReader "java.lang.Runnable"))
   (def cr (clojure.asm.ClassReader. "java.lang.String"))
-  (.> cr .getSuperName)
+  (.getSuperName cr)
+
+
   "java/lang/Object"
   (seq (.> cr .getInterfaces))
   nil
+  (def cr (clojure.asm.ClassReader. (to-bytes "/Users/zhengc/dev/apdm/platform/volly-cassandra/target/classes/com/pb/dmb/entity/model/Address.class")))
+
+
+  (.readUnsignedShort cr 8)
+  => 248
+  (.accept cr cp 0)
+
+  (filter identity
+          (map-indexed (fn [i v]
+                         (if v [i v])) (seq (.> cr .strings))))
+
+  (count (seq (.> cr .strings)))
+  (def b (to-bytes "/Users/zhengc/dev/apdm/platform/volly-cassandra/target/classes/com/pb/dmb/entity/model/Address.class"))
+
+  (aget b 4)
+
+
 
   (.? cr :name #"get")
   ("getAccess" "getAttributes" "getClassName" "getImplicitFrame" "getInterfaces" "getItem" "getItemCount" "getMaxStringLength" "getSuperName")
 
   (def cp
-    (proxy [java.util.AbstractMap clojure.asm.ClassVisitor] []
+    (proxy [clojure.asm.ClassVisitor] [clojure.asm.Opcodes/ASM4]
       (visit [version access name signature suprname interfaces]
         (println name))
       (visitSource [source debug])
@@ -82,6 +108,12 @@
       (visitField [access name desc signature value])
       (visitEnd [])
       (visitAnnotation [owner debug desc])))
+
+  (def cr (clojure.asm.ClassReader. "java.lang.String"))
+
+  (filter identity (seq (.> cr .strings)))
+
+  (.accept cr cp 0)
 
   (>source proxy)
   (.%> (type cp))

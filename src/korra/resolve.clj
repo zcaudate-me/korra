@@ -14,7 +14,7 @@
        (mapv vec)))
 
 (defn resolve-jar
-  ([x] (jar/resolve-jar x))
+  ([x] (jar/resolve-jar x nil))
   ([x context & args]
      (cond (keyword? context)
            (apply jar/resolve-jar x context args)
@@ -58,13 +58,22 @@
 
 (comment
   (resolve-coordinates 'clojure.core)
+  (resolve-coordinates 'com.jcraft.jsch.Channel)
+  (resolve-jar 'com.jcraft.jsch.Channel)
   (resolve-coordinates 'iroh.core)
+  [im.chit/iroh "0.1.11"]
   ;;(resolve-with-deps 'clojure.core "/Users/zhengc/.m2/repository/im/chit/iroh/0.1.6/iroh-0.1.6.jar")
   (-> (resolve-with-deps
        'clojure.core
-       '[im.chit/iroh "0.1.6"])
+       '[im.chit/korra "0.1.2"])
+      ["/Users/zhengc/.m2/repository/org/clojure/clojure/1.6.0/clojure-1.6.0.jar" "clojure/core.clj"]
+      ["/Users/zhengc/.m2/repository/org/clojure/clojure/1.5.1/clojure-1.5.1.jar" "clojure/core.clj"]
       (first) (maven-coordinate))
+  [org.clojure/clojure "1.5.1"]
 
+  (resolve-coordinates )
+
+  (jar/resolve-jar 'com.jcraft.jsch.Channel)
   (println (clojure.repl/pst))
   (resolve-with-deps 'clojure.core '[[org.clojure/clojure "1.5.1"] [im.chit/iroh "0.1.6"]])
   (resolve-with-deps 'clojure.core '[org.clojure/clojure "1.5.1"]))
