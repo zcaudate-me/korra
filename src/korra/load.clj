@@ -22,7 +22,7 @@
 
 (defmethod load-class Class [cls]
   (.put *class-cache*
-        name (java.lang.ref.SoftReference. cls *rq*))
+        (.getName cls) (java.lang.ref.SoftReference. cls *rq*))
   cls)
 
 (defmethod load-class (Class/forName "[B") [bytes]
@@ -36,7 +36,7 @@
              bytes (int 0) (int (count bytes)) nil)]
     (load-class cls)))
 
-(defmethod load-class String [path & more]
+(defmethod load-class String [path & [entry-path]]
   (cond (.endsWith path ".class")
         (-> path
             (to-bytes)
@@ -44,13 +44,17 @@
 
         (or (.endsWith path ".war")
             (.endsWith path ".jar"))
-        (let [resource-name (resource-path (first more))
+        (let [resource-name (resource-path entry-path)
               rt    (java.util.jar.JarFile. path)
-              entry (.getEntry rt resource-name)
+              entry  (.getEntry rt resource-name)
               stream (.getInputStream rt entry)]
           (-> stream
               (to-bytes)
               (load-class)))))
+
+(defmethod load-class clojure.lang.PersistentVector
+  [coordinates entry-path]
+  (load-class (maven-file coordinates) entry-path))
 
 (comment
 
@@ -59,7 +63,15 @@
 
 
 
+  (def a (load-class '[colt "1.2.0"] 'cern.clhep.PhysicalConstants))
+  (get *class-cache* "cern.clhep.PhysicalConstants")
+  (type a)
+  (.getName a)
 
+  cern.clhep.PhysicalConstants
+
+  (resource-path 'cern.clhep.PhysicalConstants)
+  PhysicalConstants
 
   (.? (proxy [clojure.asm.ClassVisitor] []
         (visit [version access name sygnature suprname interfaces]
